@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Cube with Skew & Gradient</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            perspective: 1200px;
+        }
+        
+        .scene {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 20s infinite linear;
+        }
+        
+        .cube {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            transform-style: preserve-3d;
+        }
+        
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            opacity: 0.9;
+        }
+        
+        /* 正面 - Front */
+        .front {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            transform: translateZ(100px) skewY(5deg) skewX(-2deg);
+        }
+        
+        /* 背面 - Back */
+        .back {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            transform: translateZ(-100px) skewY(-8deg) skewX(3deg) rotateY(180deg);
+        }
+        
+        /* 右面 - Right */
+        .right {
+            background: linear-gradient(225deg, #11998e, #38ef7d);
+            transform: translateX(100px) skewY(15deg) skewX(-5deg) rotateY(90deg);
+        }
+        
+        /* 左面 - Left */
+        .left {
+            background: linear-gradient(-45deg, #667eea, #764ba2);
+            transform: translateX(-100px) skewY(-12deg) skewX(4deg) rotateY(-90deg);
+        }
+        
+        /* 顶面 - Top */
+        .top {
+            background: linear-gradient(315deg, #f5576c, #f093fb);
+            transform: translateY(-100px) skewX(20deg) skewY(-8deg) rotateX(90deg);
+        }
+        
+        /* 底面 - Bottom */
+        .bottom {
+            background: linear-gradient(180deg, #4facfe, #00f2fe);
+            transform: translateY(100px) skewX(-18deg) skewY(6deg) rotateX(-90deg);
+        }
+        
+        /* 每个面的标签 */
+        .face::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 16px;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+        
+        .front::after { content: 'FRONT'; }
+        .back::after { content: 'BACK'; }
+        .right::after { content: 'RIGHT'; }
+        .left::after { content: 'LEFT'; }
+        .top::after { content: 'TOP'; }
+        .bottom::after { content: 'BOTTOM'; }
+        
+        /* 动画 */
+        @keyframes rotateCube {
+            0% { transform: rotateX(-20deg) rotateY(0deg); }
+            100% { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+        
+        /* 控制面板 */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            position: absolute;
+            top: 20px;
+            color: white;
+            text-align: center;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .instructions {
+            position: absolute;
+            top: 60px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            text-align: center;
+            max-width: 300px;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .scene {
+                width: 200px;
+                height: 200px;
+            }
+            .cube {
+                width: 150px;
+                height: 150px;
+                top: 25px;
+                left: 25px;
+            }
+            .face {
+                width: 150px;
+                height: 150px;
+            }
+            .front { transform: translateZ(75px) skewY(5deg) skewX(-2deg); }
+            .back { transform: translateZ(-75px) skewY(-8deg) skewX(3deg) rotateY(180deg); }
+            .right { transform: translateX(75px) skewY(15deg) skewX(-5deg) rotateY(90deg); }
+            .left { transform: translateX(-75px) skewY(-12deg) skewX(4deg) rotateY(-90deg); }
+            .top { transform: translateY(-75px) skewX(20deg) skewY(-8deg) rotateX(90deg); }
+            .bottom { transform: translateY(75px) skewX(-18deg) skewY(6deg) rotateX(-90deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>3D Cube with Skew Transform</h1>
+    <p class="instructions">使用 translate(), skewX(), skewY() 模拟3D透视效果<br>每个面都有不同的 linear-gradient 渐变背景</p >
+    
+    <div class="scene">
+        <div class="cube">
+            <div class="face front"></div>
+            <div class="face back"></div>
+            <div class="face right"></div>
+            <div class="face left"></div>
+            <div class="face top"></div>
+            <div class="face bottom"></div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <p style="color: white; margin-bottom: 10px;">CSS 3D 立方体演示</p >
+        <p style="color: rgba(255,255,255,0.8); font-size: 12px;">
+            关键技术：<br>
+            • translate() 定位<br>
+            • skewX() / skewY() 模拟透视<br>
+            • linear-gradient 渐变背景
+        </p >
+    </div>
+    
+    <script>
+        // 可选：鼠标悬停暂停动画
+        document.querySelector('.scene').addEventListener('mouseenter', function() {
+            this.style.animationPlayState = 'paused';
+        });
+        
+        document.querySelector('.scene').addEventListener('mouseleave', function() {
+            this.style.animationPlayState = 'running';
+        });
+        
+        // 控制台输出信息
+        console.log('3D Cube with Skew Transform Demo');
+        console.log('Transform properties used: translate(), skewX(), skewY()');
+        console.log('All faces have linear-gradient backgrounds');
+    </script>
+</body>
+</html>
