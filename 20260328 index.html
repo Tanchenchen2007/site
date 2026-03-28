@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汽车行驶动画 - 使用图片版本</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .road-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            margin-bottom: 40px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .road {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #2c3e50 0%, #2c3e50 40%, #7f8c8d 40%, #7f8c8d 100%);
+        }
+        
+        /* 道路中间的分隔线 */
+        .road::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                to right,
+                #f1c40f 0,
+                #f1c40f 20px,
+                transparent 20px,
+                transparent 40px
+            );
+            transform: translateY(-50%);
+        }
+        
+        /* 道路两侧的边线 */
+        .road-line {
+            position: absolute;
+            top: 40%;
+            width: 100%;
+            height: 2px;
+            background: #fff;
+        }
+        
+        .road-line:nth-child(2) {
+            top: 60%;
+        }
+
+   /* 汽车图片容器 - 版本1：在线图片 */
+        .car-image-container {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 200px;
+            height: 100px;
+            transform: translateY(-50%);
+            animation: drive 8s linear infinite;
+            z-index: 10;
+        }
+        
+        /* 汽车图片 - 使用在线图片URL */
+        .car-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* 驾驶动画 */
+        @keyframes drive {
+            0% {
+                left: -200px; /* 从屏幕外开始 */
+                transform: translateY(-50%) scaleX(1);
+            }
+            45% {
+                left: calc(100% - 50px); /* 到达屏幕右侧 */
+                transform: translateY(-50%) scaleX(1);
+            }
+            50% {
+                left: calc(100% - 50px);
+                transform: translateY(-50%) scaleX(-1); /* 翻转图片实现调头效果 */
+            }
+            95% {
+                left: -200px;
+                transform: translateY(-50%) scaleX(-1);
+            }
+            100% {
+                left: -200px;
+                transform: translateY(-50%) scaleX(1);
+            }
+        }
+        
+        /* 版本2：使用本地图片的汽车（备用方案） */
+        .car-local-container {
+            position: absolute;
+            top: 70%;
+            left: 0;
+            width: 150px;
+            height: 80px;
+            transform: translateY(-50%);
+            animation: drive-local 6s linear infinite;
+            z-index: 10;
+            display: none; /* 默认隐藏，通过JS切换 */
+        }
+        
+        .car-local {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.5));
+        }
+        
+        @keyframes drive-local {
+            0% {
+                left: -150px;
+                transform: translateY(-50%) scaleX(1);
+            }
+            45% {
+                left: calc(100% - 50px);
+                transform: translateY(-50%) scaleX(1);
+            }
+            50% {
+                left: calc(100% - 50px);
+                transform: translateY(-50%) scaleX(-1);
+            }
+            95% {
+                left: -150px;
+                transform: translateY(-50%) scaleX(-1);
+            }
+            100% {
+                left: -150px;
+                transform: translateY(-50%) scaleX(1);
+            }
+        }
+        
+        /* 控制面板 */
+        .controls {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .car-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button, .car-option {
+            padding: 12px 24px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .car-option {
+            background: #3498db;
+        }
+        
+        button:hover, .car-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active, .car-option:active {
+            transform: translateY(1px);
+        }
+        
+        .car-option.active {
+            background: #2980b9;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .speed-control {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .speed-control label {
+            font-size: 1.1rem;
+        }
+        
+        .speed-control input {
+            width: 200px;
+        }
+        
+        .info {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .info h3 {
+            margin-bottom: 10px;
+            color: #f1c40f;
+        }
+        
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+        
+        .github-link {
+            margin-top: 20px;
+            color: #f1c40f;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .github-link:hover {
+            background: rgba(0, 0, 0, 0.5);
+            text-decoration: underline;
+        }
+        
+        footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .road-container {
+                height: 250px;
+            }
+            
+            .car-image-container, .car-local-container {
+                width: 150px;
+                height: 75px;
+            }
+            
+            .control-buttons, .car-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button, .car-option {
+                width: 80%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>汽车行驶动画 - 图片版本</h1>
+        <p class="subtitle">CSS+HTML+JS课程作业 - 使用真实汽车图片的动画效果</p >
+        
+        <div class="road-container">
+            <div class="road"></div>
+            <div class="road-line"></div>
+            <div class="road-line"></div>
+            
+            <!-- 版本1：使用在线图片 -->
+            <div class="car-image-container" id="onlineCar">
+                < img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=200&h=100&fit=crop&crop=center" 
+                     alt="红色汽车" class="car-image" id="onlineCarImg">
+            </div>
+            
